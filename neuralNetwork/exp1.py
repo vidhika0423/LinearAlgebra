@@ -89,5 +89,5 @@ for i in range(1000):
     
 # make predictions
 predictions = (A2>0.5).astype(int)
-print('\Predictions:', predictions)
+print('\nPredictions:', predictions)
 
