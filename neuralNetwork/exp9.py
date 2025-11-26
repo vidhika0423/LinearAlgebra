@@ -1,4 +1,4 @@
-# loss calculation with categorical cross entropy 
+# loss calculation 
 
 import math 
 import numpy as np 
