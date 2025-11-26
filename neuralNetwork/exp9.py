@@ -90,6 +90,14 @@ class Loss_huberLoss(Loss):
         loss = ( loss_mse*num_small + loss_mae*num_large) / total_elements
         return loss
 
+# classification loss functions
+
+class Loss_BinaryCrrossEntropy(Loss):
+    def forward(self, y_pred, y_true):
+        y_pred_clipped = np.clip(y_pred, 1e-7, 1-1e-7)
+        loss = -( (y_true * np.log(y_pred)) + (1 - y_true) * (np.log(1 - y_pred)))
+        return np.mean(loss)
+
 
 class Loss_CategoricalCrossEntropy(Loss):
     def forward(self, y_pred, y_true):
