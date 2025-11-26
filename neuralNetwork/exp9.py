@@ -57,7 +57,38 @@ class Loss_MeanAbsoluteError(Loss):
         loss = np.sum(error) / samples
         return loss
 
+# huber loss -> MSE when errors are small ->MAE when errors are large 
+# If |e| ≤ δ → Small error
+class Loss_huberLoss(Loss):
+    def forward(self, y_pred, y_true):
+        error = np.subtract(y_pred, y_true)
+        abs_error= np.abs(error)
+        delta = np.median(abs_error)
+        # masks
+        small_mask = abs_error <= delta
+        large_mask = abs_error > delta
+        # select only small_error elements
+        if np.any(small_mask):
+            y_pred_small = y_pred[small_mask]
+            y_true_small = y_true[small_mask]
+            loss_mse = Loss_MeanSquareError().forward(y_pred_small, y_true_small)
+        else:
+            loss_mse = 0.0
 
+        # select only large_error elements
+        if np.any(large_mask):
+            y_pred_large = y_pred[large_mask]
+            y_true_large = y_true[large_mask]
+            loss_mae = Loss_MeanAbsoluteError().forward(y_pred_large, y_true_large)
+        else:
+            loss_mae = 0.0
+
+        total_elements = len(y_pred.flatten())
+        num_small = np.sum(small_mask)
+        num_large = np.sum(large_mask)
+
+        loss = ( loss_mse*num_small + loss_mae*num_large) / total_elements
+        return loss
 
 
 class Loss_CategoricalCrossEntropy(Loss):
